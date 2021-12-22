@@ -98,3 +98,49 @@ with mp_holistic.Holistic(
 
     cap.release()
     cv2.destroyAllWindows()
+
+
+def extract_keypoints(results):
+    # Get the values for each landmark and error handle to get zeros if a human feature is not detected
+    pose = (
+        np.array(
+            [
+                [res.x, res.y, res.z, res.visibility]
+                for res in results.pose_landmarks.landmark
+            ]
+        ).flatten
+        if results.pose_landmarks
+        else np.zeros(132)
+    )
+    face = (
+        np.array(
+            [
+                [res.x, res.y, res.z, res.visibility]
+                for res in results.face_landmarks.landmark
+            ]
+        ).flatten
+        if results.face_landmarks
+        else np.zeros(1404)
+    )
+    lh = (
+        np.array(
+            [
+                [res.x, res.y, res.z, res.visibility]
+                for res in results.left_hand_landmarks.landmark
+            ]
+        ).flatten
+        if results.left_hand_landmarks
+        else np.zeros(21 * 3)
+    )
+    rh = (
+        np.array(
+            [
+                [res.x, res.y, res.z, res.visibility]
+                for res in results.right_hand_landmarks.landmark
+            ]
+        ).flatten
+        if results.right_hand_landmarks
+        else np.zeros(21 * 3)
+    )
+
+    return np.concatenate([pose, face, lh, rh])
