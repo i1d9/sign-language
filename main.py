@@ -142,5 +142,23 @@ def extract_keypoints(results):
         if results.right_hand_landmarks
         else np.zeros(21 * 3)
     )
-
     return np.concatenate([pose, face, lh, rh])
+
+#Path for exported data, numpy arrays
+DATA_PATH = os.path.join("MP_DATA")
+
+#Actions that the code will try to detect
+actions = np.array(['hello', 'thanks', 'iloveyou'])
+
+#Thirty Videos worth of data
+no_sequences = 30
+#30fps for each sequence 
+sequence_length = 30
+
+#Makes a directory for each action to be detected with 30 different data points
+for action in actions:
+    for sequence in range(no_sequences):
+        try:
+            os.makedirs(os.path.join(DATA_PATH, action, str(sequence)))
+        except:
+            pass
