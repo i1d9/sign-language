@@ -22,7 +22,19 @@ def mediapipe_detection(image, model):
     return image, results
 
 
+#Draws detected landmarks connections from the media pipe model
+def draw_landmarks(image, results):
+    mp_drawing.draw_landmarks(image, results.face_landmarks, mp_holistic.FACEMESH_CONTOURS)
+    mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS)
+    mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
+    mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
 
+
+def draw_styled_landmarks(image, results):
+    mp_drawing.draw_landmarks(image, results.face_landmarks, mp_holistic.FACEMESH_CONTOURS)
+    mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS)
+    mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
+    mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
 
 #Access the webcam which has the value of 0
 cap = cv2.VideoCapture(0)
@@ -39,8 +51,11 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
         image, results = mediapipe_detection(frame, holistic)
         print(results)
 
+        #Draw landmarks
+        draw_landmarks(image, results)
+
         #Show the feed with the specified frame title
-        cv2.imshow("OpenCV Feed", frame)
+        cv2.imshow("OpenCV Feed", image)
 
 
         #If q is pressed exit
