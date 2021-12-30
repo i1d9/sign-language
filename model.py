@@ -12,6 +12,7 @@ from tensorflow.keras.callbacks import TensorBoard
 from sklearn.metrics import multilabel_confusion_matrix, accuracy_score
 
 
+
 # Create
 # 1. evaluation function
 # 2. accuracy function
@@ -30,7 +31,7 @@ class Model:
 
         # Actions that the code will try to detect
         # TODO: Load from database
-        self.actions = np.array(["hello", "thanks", "iloveyou"])
+        self.actions = actions
 
         self.log_dir = os.path.join("Logs")
         self.tb_callback = TensorBoard(log_dir=self.log_dir)
@@ -71,7 +72,7 @@ class Model:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size)
         return X_train, X_test, y_train, y_test
 
-    def train(self, X_train, y_train, epochs=2000):
+    def train(self,epochs=2000):
         # Extract saved data for training the model
 
         label_map = {label: num for num, label in enumerate(self.actions)}
@@ -103,6 +104,7 @@ class Model:
         # Train the model
         self.model.fit(X_train, y_train, epochs, callbacks=[self.tb_callback])
         # self.evaluate(X_test, y_test)
+        self.save_trained_model()
 
     def evaluate(self, X_test, y_test):
         # Model evaluation

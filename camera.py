@@ -4,11 +4,20 @@ import os
 from matplotlib import pyplot as plt
 import time
 import mediapipe as mp
+import configparser
 
 # Create Functions
 # Train view
 # Prediction View
+config = configparser.ConfigParser()
+config.read('settings.ini')
+train_data_folder = config['DB']['train_data_folder']
+model_name = config['DB']['model_name']
 
+frame_title = config['VIDEO']['frame_title']
+no_sequences = config['VIDEO']['no_sequences']
+sequence_length = config['VIDEO']['sequence_length']
+train_frame_sleep = config['VIDEO']['train_frame_sleep']
 
 class SignCamera:
     def __init__(self):
@@ -19,10 +28,9 @@ class SignCamera:
         # Access the webcam which has the value of 0
         self.cap = cv2.VideoCapture(0)
         # Path for exported data, numpy arrays
-        self.DATA_PATH = os.path.join("MP_DATA")
+        self.DATA_PATH = os.path.join(train_data_folder)
         # Actions that the code will try to detect
-        #Load from database
-        self.actions = np.array(["hello", "thanks", "iloveyou"])
+        
 
     # Pass frame from OpenCV and the holistic model
     def mediapipe_detection(self, image, model):
@@ -60,7 +68,7 @@ class SignCamera:
                 color=(80, 110, 10), thickness=1, circle_radius=1
             ),
             self.mp_drawing.DrawingSpec(
-                color=(80, 256, 121), thickness=1, circle_radius=1
+                color=(80, 256, 121), thickness=2, circle_radius=1
             ),
         )
         self.mp_drawing.draw_landmarks(
@@ -68,10 +76,10 @@ class SignCamera:
             results.pose_landmarks,
             self.mp_holistic.POSE_CONNECTIONS,
             self.mp_drawing.DrawingSpec(
-                color=(80, 22, 10), thickness=1, circle_radius=1
+                color=(0, 0, 255), thickness=1, circle_radius=1
             ),
             self.mp_drawing.DrawingSpec(
-                color=(80, 44, 121), thickness=1, circle_radius=1
+                color=(0, 255, 255), thickness=1, circle_radius=1
             ),
         )
         self.mp_drawing.draw_landmarks(
@@ -134,9 +142,9 @@ class SignCamera:
 
     def open_camera_and_save_data_for_training(self, actions):
         # Thirty Videos worth of data
-        no_sequences = 30
+        #no_sequences = 30
         # 30fps for each sequence
-        sequence_length = 30
+        #sequence_length = 30
 
         # Makes a directory for each action to be detected with 30 different data points
         for action in actions:
@@ -193,7 +201,7 @@ class SignCamera:
                                 cv2.LINE_AA,
                             )
                             # Show the feed with the specified frame title
-                            cv2.imshow("OpenCV Feed", image)
+                            cv2.imshow(frame_title, image)
                             # Wait for two seconds
                             cv2.waitKey(2000)
                         else:
@@ -208,7 +216,7 @@ class SignCamera:
                                 cv2.LINE_AA,
                             )
                             # Show the feed with the specified frame title
-                            cv2.imshow("OpenCV Feed", image)
+                            cv2.imshow(frame_title, image)
 
                         keypoints = self.extract_keypoints(results)
 
@@ -241,15 +249,15 @@ class SignCamera:
                 cv2.putText(
                     image,
                     "Press Q to Exit",
-                    (3, 30),
+                    (2, 30),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     1,
-                    (255, 255, 255),
-                    2,
+                    (0, 0, 255),
+                    1,
                     cv2.LINE_AA,
                 )
 
-                cv2.imshow("OpenCV Feed", image)
+                cv2.imshow(frame_title, image)
 
                 if cv2.waitKey(10) & 0xFF == ord("q"):
                     break
@@ -309,7 +317,7 @@ class SignCamera:
                     cv2.LINE_AA,
                 )
 
-                cv2.imshow("OpenCV Feed", image)
+                cv2.imshow(frame_title, image)
 
                 if cv2.waitKey(10) & 0xFF == ord("q"):
                     break
