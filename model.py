@@ -29,6 +29,7 @@ class Model:
         self.DATA_PATH = os.path.join("MP_DATA")
 
         # Actions that the code will try to detect
+        # TODO: Load from database
         self.actions = np.array(["hello", "thanks", "iloveyou"])
 
         self.log_dir = os.path.join("Logs")

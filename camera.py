@@ -21,10 +21,11 @@ class SignCamera:
         # Path for exported data, numpy arrays
         self.DATA_PATH = os.path.join("MP_DATA")
         # Actions that the code will try to detect
+        #Load from database
         self.actions = np.array(["hello", "thanks", "iloveyou"])
 
     # Pass frame from OpenCV and the holistic model
-    def mediapipe_detection(image, model):
+    def mediapipe_detection(self, image, model):
         # Color Conversion from one color space to another(Blue Green Red to Red Green Blue)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image.flags.writeable = False
@@ -224,6 +225,38 @@ class SignCamera:
             self.cap.release()
             cv2.destroyAllWindows()
 
+    def open_camera_default(self):
+        with self.mp_holistic.Holistic(
+            min_detection_confidence=0.5, min_tracking_confidence=0.5
+        ) as holistic:
+            while self.cap.isOpened():
+                ret, frame = self.cap.read()
+
+                # Make predeiction based on the frame
+                image, results = self.mediapipe_detection(frame, holistic)
+                #print(results)
+
+                self.draw_styled_landmarks(image, results)
+
+                cv2.putText(
+                    image,
+                    "Press Q to Exit",
+                    (3, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    1,
+                    (255, 255, 255),
+                    2,
+                    cv2.LINE_AA,
+                )
+
+                cv2.imshow("OpenCV Feed", image)
+
+                if cv2.waitKey(10) & 0xFF == ord("q"):
+                    break
+
+            self.cap.release()
+            cv2.destroyAllWindows()
+
     def open_camera_and_predict(self, model, actions):
         sentence = []
         threshold = 0.5
@@ -283,3 +316,10 @@ class SignCamera:
 
             self.cap.release()
             cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    camera  = SignCamera()
+    camera.open_camera_default()
+    
+    
